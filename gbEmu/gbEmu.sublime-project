@@ -1,0 +1,10 @@
+{
+	"folders":
+	[
+		{
+			"path": "C:\\Users\\Alessandro\\Documents\\_vsProjects\\gbEmu",
+			"folder_exclude_patterns": ["Debug", "roms"],
+			"file_exclude_patterns": ["*.sln","*.opensdf","*.vcxproj*","*.sublime-project"]
+		}
+	]
+}
