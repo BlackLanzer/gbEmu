@@ -247,7 +247,7 @@ case 0x11:
 // 0x12 LD (DE), A
 case 0x12:
 {
-	mmu.writeBye(regs.de, regs.a);
+	mmu.writeByte(regs.de, regs.a);
 	clock += 2;
 	// instructioName = "LD (DE), A";
 	break;
@@ -764,6 +764,74 @@ case 0x32:
 	instructionName = "LDD (HL), A";
 	break;
 } 
+// 0x33 INC SP
+case 0x33:
+{
+	regs.sp++;
+	clock += 2;
+	// instructionName = "INC SP";
+	break;
+}
+// 0x34 INC (HL)
+case 0x34:
+{
+	byte value = mmu.readByte(regs.hl);
+	value++;
+	mmu.writeByte(regs.hl, value);
+	// flags
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= 0xBF;
+	// half carry
+	// non ho idea di come funziona
+    byte hFlag = (value & 0x0F) ? 0 : 1;
+    if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20;
+	clock += 3;
+	// instructionName = "INC (HL)";
+	break;
+}
+// 0x35 DEC (HL)
+case 0x35:
+{
+	byte value = mmu.readByte(regs.hl);
+	value--;
+	mmu.writeByte(regs.hl, value);	
+	// flags
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= 0x7F;
+	// add/sub flag
+	regs.f |= 0x40;
+	// half carry flag
+	// non ho idea di come funziona
+    byte hFlag = ((value & 0x0F) == 0x0F) ? 1 : 0);
+    if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+    clock += 3;
+	// instructionName = "DEC (HL)";
+	break;
+}
+// 0x36 LD (HL), n
+case 0x36:
+{
+	byte value = mmu.readByte(regs.pc++);
+	mmu.writeByte(regs.hl, value);
+	clock += 3;
+	// instructionName = "LD (HL), " + n;
+	break;
+}
+
 
 // 0xC3 JP nn
 case 0xC3:
