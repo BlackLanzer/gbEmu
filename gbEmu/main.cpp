@@ -18,12 +18,17 @@ int main(int argc, char const *argv[])
 	*/
 
 	// NOTE TESTING
+	byte test = 0x82;
+	char test2 = ((char) test);
+	test--;
+	test2 = test;
 
 	while (true)
 	{
-		byte istruzione = 0x04;
+		byte istruzione = 0x80;
 		cpu.execute(istruzione);
-		
+		istruzione = 0x27;
+		cpu.execute(istruzione);
 	}
 	// cpu.mmu.loadRom(std::string("../roms/ttt.gb"));
 	// cpu.mmu.dumpMemory(std::string("../roms/ttt.dump2"));
