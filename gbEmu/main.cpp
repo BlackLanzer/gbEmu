@@ -19,18 +19,23 @@ int main(int argc, char const *argv[])
 
 	// NOTE TESTING
 
-	
-	cpu.mmu.loadRom(std::string("../roms/ttt.gb"));
-	cpu.mmu.dumpMemory(std::string("../roms/ttt.dump2"));
-
-	while(true)
+	while (true)
 	{
-		byte istruzione = cpu.fetch();
+		byte istruzione = 0x04;
 		cpu.execute(istruzione);
-
-		std::cout << cpu.instructionName;	
-		// cpu.mmu.dumpMemory(std::string("../roms/ttt.dump2"));
+		
 	}
+	// cpu.mmu.loadRom(std::string("../roms/ttt.gb"));
+	// cpu.mmu.dumpMemory(std::string("../roms/ttt.dump2"));
+
+	// while(true)
+	// {
+	// 	byte istruzione = cpu.fetch();
+	// 	cpu.execute(istruzione);
+
+	// 	std::cout << cpu.instructionName;	
+	// 	// cpu.mmu.dumpMemory(std::string("../roms/ttt.dump2"));
+	// }
 
 
 	system("PAUSE");
