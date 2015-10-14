@@ -69,7 +69,7 @@ case 0x05:
 	regs.f |= 0x40;
 	// half carry flag
 	// non ho idea di come funziona
-    byte hFlag = ((regs.b & 0x0F) == 0x0F) ? 1 : 0);
+    byte hFlag = ((regs.b & 0x0F) == 0x0F) ? 1 : 0;
     if (hFlag == 0)
     	regs.f &= ~0x20;
     else
@@ -194,7 +194,7 @@ case 0x0D:
 	regs.f |= 0x40;
 	// half carry flag
 	// non ho idea di come funziona
-    byte hFlag = ((regs.c & 0x0F) == 0x0F) ? 1 : 0);
+    byte hFlag = ((regs.c & 0x0F) == 0x0F) ? 1 : 0;
     if (hFlag == 0)
     	regs.f &= ~0x20;
     else
@@ -297,7 +297,7 @@ case 0x15:
 	regs.f |= 0x40;
 	// half carry flag
 	// non ho idea di come funziona
-    byte hFlag = ((regs.d & 0x0F) == 0x0F) ? 1 : 0);
+    byte hFlag = ((regs.d & 0x0F) == 0x0F) ? 1 : 0;
     if (hFlag == 0)
     	regs.f &= ~0x20;
     else
@@ -419,7 +419,7 @@ case 0x1D:
 	regs.f |= 0x40;
 	// half carry flag
 	// non ho idea di come funziona
-    byte hFlag = ((regs.e & 0x0F) == 0x0F) ? 1 : 0);
+    byte hFlag = ((regs.e & 0x0F) == 0x0F) ? 1 : 0;
     if (hFlag == 0)
     	regs.f &= ~0x20;
     else
@@ -457,7 +457,7 @@ case 0x20:
 	if (regs.f & 0x80 == 0)
 	{
 		// jump
-		regs.pc += mmu.readByte(regs.pc);
+		regs.pc += (char) mmu.readByte(regs.pc); // cast per il segno
 	}
 	regs.pc++;
 	clock += 2;
@@ -527,7 +527,7 @@ case 0x25:
 	regs.f |= 0x40;
 	// half carry flag
 	// non ho idea di come funziona
-    byte hFlag = ((regs.h & 0x0F) == 0x0F) ? 1 : 0);
+    byte hFlag = ((regs.h & 0x0F) == 0x0F) ? 1 : 0;
     if (hFlag == 0)
     	regs.f &= ~0x20;
     else
@@ -615,7 +615,7 @@ case 0x28:
 	if (regs.f & 0x80 == 1)
 	{
 		// jump
-		regs.pc += mmu.readByte(regs.pc);
+		regs.pc += (char) mmu.readByte(regs.pc); // cast per il segno
 	}
 	regs.pc++;
 	clock += 2;
@@ -706,7 +706,7 @@ case 0x2D:
 	regs.f |= 0x40;
 	// half carry flag
 	// non ho idea di come funziona
-    byte hFlag = ((regs.l & 0x0F) == 0x0F) ? 1 : 0);
+    byte hFlag = ((regs.l & 0x0F) == 0x0F) ? 1 : 0;
     if (hFlag == 0)
     	regs.f &= ~0x20;
     else
@@ -739,7 +739,7 @@ case 0x30:
 {
 	if (regs.f & 0x10 == 0)
 	{	// jump
-		regs.pc += mmu.readByte(regs.pc);
+		regs.pc += (char) mmu.readByte(regs.pc); // cast per il segno
 	}
 	regs.pc++;
 	clock += 2;
@@ -813,7 +813,7 @@ case 0x35:
 	regs.f |= 0x40;
 	// half carry flag
 	// non ho idea di come funziona
-    byte hFlag = ((value & 0x0F) == 0x0F) ? 1 : 0);
+    byte hFlag = ((value & 0x0F) == 0x0F) ? 1 : 0;
     if (hFlag == 0)
     	regs.f &= ~0x20;
     else
@@ -835,7 +835,7 @@ case 0x36:
 case 0x37:
 {	// Set Carry Flag
 	// flags: -001
-	flags = flags & ~0x40 & ~0x20 | 0x10;
+	regs.f = regs.f & ~0x40 & ~0x20 | 0x10;
 	clock++;
 	// instructionName = "SCF";
 	break;
@@ -845,7 +845,7 @@ case 0x38:
 {
 	if (regs.f & 0x10 == 1)
 	{	// jump
-		regs.pc += mmu.readByte(regs.pc);
+		regs.pc += (char) mmu.readByte(regs.pc); // cast per il segno
 	}
 	regs.pc++;
 	clock += 2;
@@ -892,7 +892,7 @@ case 0x3A:
 // 0x3B DEC SP
 case 0x3B:
 {
-	regs.SP--;
+	regs.sp--;
 	clock += 2;
 	//instructionName = "DEC SP";
 	break;	
@@ -935,7 +935,7 @@ case 0x3D:
 	regs.f |= 0x40;
 	// half carry flag
 	// non ho idea di come funziona
-    byte hFlag = ((regs.a & 0x0F) == 0x0F) ? 1 : 0);
+    byte hFlag = ((regs.a & 0x0F) == 0x0F) ? 1 : 0;
     if (hFlag == 0)
     	regs.f &= ~0x20;
     else
@@ -1461,7 +1461,34 @@ case 0x7F:
 	// instructionName = "LD A, A";
 	break;
 }
-
+// 80 ADD A, B
+case 0x80:
+{
+	int value = regs.a + regs.b;
+	regs.a = value;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = (((regs.a & 0x0F) + (regs.b & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+    clock++;
+    // instructionName = "ADD A, B";
+    break;
+}
 
 
 // 0xC3 JP nn
