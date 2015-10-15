@@ -1460,7 +1460,7 @@ case 0x7F:
 	// instructionName = "LD A, A";
 	break;
 }
-// 80 ADD A, B
+// 0x80 ADD A, B
 case 0x80:
 {
 	int value = regs.a + regs.b;
@@ -1488,7 +1488,552 @@ case 0x80:
     // instructionName = "ADD A, B";
     break;
 }
-
+// 0x81 ADD A, C
+case 0x81:
+{
+	int value = regs.a + regs.c;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = (((regs.a & 0x0F) + (regs.c & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADD A, C";
+    break;
+}
+// 0x82 ADD A, D
+case 0x82:
+{
+	int value = regs.a + regs.d;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = (((regs.a & 0x0F) + (regs.d & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADD A, D";
+    break;
+}
+// 0x83 ADD A, E
+case 0x83:
+{
+	int value = regs.a + regs.e;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = (((regs.a & 0x0F) + (regs.e & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADD A, E";
+    break;
+}
+// 0x84 ADD A, H
+case 0x84:
+{
+	int value = regs.a + regs.h;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = (((regs.a & 0x0F) + (regs.h & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADD A, H";
+    break;
+}
+// 0x85 ADD A, L
+case 0x85:
+{
+	int value = regs.a + regs.l;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = (((regs.a & 0x0F) + (regs.l & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADD A, L";
+    break;
+}
+// 0x86 ADD A, (HL)
+case 0x86:
+{
+	byte tmp = mmu.readByte(regs.hl);
+	int value = regs.a + tmp;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = (((regs.a & 0x0F) + (tmp & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock += 2;
+    // instructionName = "ADD A, (HL)";
+    break;
+}
+// 0x87 ADD A, A
+case 0x87:
+{
+	int value = regs.a + regs.a;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = (((regs.a & 0x0F) + (regs.a & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADD A, A";
+    break;
+}
+// 0x88 ADC A, C
+case 0x88:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.c + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.c & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, C";
+    break;
+}
+// 0x89 ADC A, D
+case 0x89:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.d + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.d & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, D";
+    break;
+}
+// 0x8A ADC A, E
+case 0x8A:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.e + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.e & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, E";
+    break;
+}
+// 0x8B ADC A, H
+case 0x8B:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.h + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.h & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, H";
+    break;
+}
+// 0x8C ADC A, B
+case 0x8C:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.b + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.b & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, B";
+    break;
+}
+// 0x8D ADC A, C
+case 0x8D:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.c + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.c & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, C";
+    break;
+}
+// 0x8E ADC A, D
+case 0x8E:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.d + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.d & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, D";
+    break;
+}
+// 0x8F ADC A, E
+case 0x8F:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.e + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.e & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, E";
+    break;
+}
+// 0x84 ADC A, H
+case 0x84:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.h + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.h & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, H";
+    break;
+}
+// 0x85 ADC A, L
+case 0x85:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.l + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.l & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, L";
+    break;
+}
+// 0x86 ADC A, (HL)
+case 0x86:
+{
+	byte tmp = mmu.readByte(regs.hl);
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + tmp + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag =cFlag +  (((regs.a & 0x0F) + (tmp & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock += 2;
+    // instructionName = "ADC A, (HL)";
+    break;
+}
+// 0x87 ADC A, A
+case 0x87:
+{
+	byte cFlag = (regs.f & 0x10) >> 4;
+	int value = regs.a + regs.a + cFlag;
+	// flags: z0hc
+	// zero flag
+	if (value == 0)
+		regs.f |= 0x80;
+	else
+		regs.f &= ~0x80;
+	// add/sub flag
+	regs.f &= ~0x40;
+	// carry flag
+	if (value > 0xFF)
+		regs.f |= 0x10;
+	else
+		regs.f &= ~0x10;
+	// half carry flag
+	byte hFlag = ((cFlag + (regs.a & 0x0F) + (regs.a & 0x0F)) > 0x0F) ? 1 : 0;
+	if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.a = value;
+    clock++;
+    // instructionName = "ADC A, A";
+    break;
+}
 
 // 0xC3 JP nn
 case 0xC3:
