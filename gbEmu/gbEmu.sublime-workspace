@@ -4,20 +4,40 @@
 		"selected_items":
 		[
 			[
+				"read",
+				"readByte"
+			],
+			[
+				"isn",
+				"instructionName"
+			],
+			[
+				"a",
+				"a"
+			],
+			[
+				"wr",
+				"writeByte"
+			],
+			[
+				"wri",
+				"writeByte"
+			],
+			[
+				"instr",
+				"instructionName"
+			],
+			[
+				"ins",
+				"instructionName"
+			],
+			[
 				"hl",
 				"hl"
 			],
 			[
 				"add",
 				"address"
-			],
-			[
-				"read",
-				"readWord"
-			],
-			[
-				"wr",
-				"writeWord"
 			],
 			[
 				"de",
@@ -255,34 +275,23 @@
 			"file": "types.h",
 			"settings":
 			{
-				"buffer_size": 154,
+				"buffer_size": 156,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"contents": "#pragma once\n\n// 0x00 NOP\ncase 0x00:\n{\n	clock += 1;\n	//instructionName = \"NOP\";\n	break;\n}\n// 0x01 LD BC,nn\ncase 0x01:\n{\n	regs.bc = mmu.readWord(regs.pc);\n	clock += 3;\n	regs.pc += 2;\n	//instructionName = std::string(\"LD BC, \") << regs.bc;\n	break;\n}\n// 0x02 LD (BC), A\ncase 0x02:\n{\n	mmu.writeByte(regs.bc, regs.a);\n	clock +=2;\n	//instructionName = \"LD (BC), A\";\n	break;\n}\n// 0x03 INC BC\ncase 0x03:\n{\n	regs.bc++;\n	clock += 2;\n	//instructionName = \"INC BC\";\n	break;\n}\n// 0x04 INC B\ncase 0x04:\n{\n	regs.b++;\n	// flags\n	// zero flag\n	if (regs.b == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag\n	regs.f &= 0xBF;\n	// TODO half carry se serve\n\n	clock++;\n	//instructionName = \"INC B\";\n	break;\n}\n// 0x05 DEC B\ncase 0x05:\n{\n	regs.b--;\n	// flags\n	// zero flag\n	if (regs.b == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag\n	regs.f |= 0x40;\n	// TODO half carry se serve\n	clock++;\n	//instructionName = \"DEC B\";\n	break;\n}\n// 0x06 LD B, n\ncase 0x06:\n{\n	regs.b = mmu.readByte(regs.pc++);\n	clock += 2;\n	//instructionName = std::string(\"LD B, \") << (int) regs.b;\n	break;\n}\n// 0x07 RLCA \ncase 0x07:\n{\n	// istruzione che fa una rotazione verso sinistra dei bit\n	// e salva l'ultimo nel primo bit e nel carry flag\n	byte lastBit = regs.a & 0x80;\n	// flags 000c\n	// azzero i flag\n	regs.f = 0; \n	// aggiorno il carry flag\n	regs.f = lastBit << 4;\n	// rotazione di A\n	regs.a = (regs.a << 1) + lastBit;\n	clock++;\n	//instructionName = \"RLCA\";\n	break;\n}\n// 0x08 LD (nn), SP\ncase 0x08:\n{\n	word address = mmu.readWord(regs.pc);\n	mmu.writeWord(address,regs.sp);\n	clock += 5;\n	regs.pc += 2;\n	//instructionName = std::string(\"LD (\") << address << std::string(\"), SP\");\n	break;\n}\n// 0x09 ADD HL, BC\ncase 0x09:\n{\n	int tmp = regs.hl + regs.bc;\n	regs.hl = tmp;\n	// flags: -0hc----\n	// add/sub flag a 0\n	regs.f &= 0xBF; // 0xBF = 10111111  \n	// carry flag\n	if (tmp > 0xFFFF)\n	{	// set 1\n		regs.f |= 0x10; // 0x10 = 00010000\n	} \n	else\n	{	// set 0\n		regs.f &= 0xEF; // 0xEF = 11101111\n	}\n	// TODO half-carry flag se serve\n\n	clock += 2;\n	//instructionName = \"ADD HL, BC\";\n	break;\n}\n// 0x0A LD A, (BC)\ncase 0x0A:\n{\n	regs.a = mmu.readByte(regs.bc);\n	clock += 2;\n	//instructionName = \"LD A, (BC)\";\n	break;\n}\n// 0x0B DEC BC\ncase 0x0B:\n{\n	regs.bc--;\n	clock += 2;\n	//instructionName = \"DEC BC\";\n	break;\n}\n// 0x0C INC C\ncase 0x0C:\n{\n	regs.c++;\n	// flags\n	// zero flag\n	if (regs.c == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag a 0\n	regs.f &= 0xBF;\n	// TODO half carry se serve\n\n	clock++;\n	//instructionName = \"INC C\";\n	break;	\n}\n// 0x0D DEC C\ncase 0x0D:\n{\n	regs.c--;\n	// flags\n	// zero flag\n	if (regs.c == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;	// add/sub flag a 1\n	regs.f |= 0x40;\n	// TODO half carry se serve\n	clock++;\n	//instructionName = \"DEC C\";\n	break;\n}\n// 0x0E LD C, n\ncase 0x0E:\n{\n	regs.c = mmu.readByte(regs.pc++);\n	clock += 2;\n	//instructionName = std::string(\"LD C, \") << regs.c;\n	break;\n}\n// 0x0F RRCA\ncase 0x0F:\n{\n	// istruzione che fa una rotazione verso destra dei bit\n	// e salva il primo nell'ultimo bit e nel carry flag\n	byte lastBit = regs.a & 1;\n	// flags 000c\n	// carry flag\n	regs.f = lastBit << 4;\n	// rotazione di A\n	regs.a = (regs.a >> 1) + (lastBit << 7);\n	clock++;\n	//instructionName = \"RRCA\";\n	break;\n}\n// 0x10 00 STOP \ncase 0x10:\n{\n	// non so cosa faccia, quindi faccio solo andare avanti\n	regs.pc++;\n	clock++; // ???\n	// instructionName = \"STOP\";\n	break;\n}\n//0x11 LD DE, nn\ncase 0x11:\n{\n	regs.de = mmu.readWord(regs.pc);\n	regs.pc += 2;\n	clock += 3;\n	// instructionName = \"LD DE, \" + nn;\n	break;\n}\n// 0x12 LD (DE), A\ncase 0x12:\n{\n	mmu.writeBye(regs.de, regs.a);\n	clock += 2;\n	// instructioName = \"LD (DE), A\";\n	break;\n}\n// 0x13 INC DE\ncase 0x13:\n{\n	regs.de++;\n	clock += 2;\n	// instructionName = \"INC DE\";\n	break;\n}\n// 0x14 INC D\ncase 0x14:\n{\n	regs.d++;\n	// flags\n	// zero flag\n	if (regs.d == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag a 0\n	regs.f &= 0xBF;\n	// TODO half carry se serve\n\n	clock++;\n	//instructionName = \"INC D\";\n	break;\n}\n// 0x15 DEC D\ncase 0x15:\n{\n	regs.d--;\n	// flags\n	// zero flag\n	if (regs.d == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag\n	regs.f |= 0x40;\n	// TODO half carry se serve\n	clock++;\n	//instructionName = \"DEC D\";\n	break;\n}\n// 0x16 LD D, n\ncase 0x16:\n{\n	regs.d = mmu.readByte(regs.pc++);\n	clock += 2;\n	//instructionName = std::string(\"LD D, \") << (int) regs.d;\n	break;\n}\n// 0x17 RLA\ncase 0x17:\n{\n	// shift a sinistra dei bit con il carry che va nel primo bit\n	byte lastBit = regs.a & 0x80;\n	// rotazione di A\n	regs.a = (regs.a << 1) + ((regs.f & 0x10) >> 4);\n	// flags 000c\n	// azzero i flag\n	// aggiorno il carry flag\n	regs.f = lastBit << 4;\n	clock++;\n	//instructionName = \"RLA\";\n	break;\n}\n// 0x18 JR n\ncase 0x18:\n{\n	regs.pc += mmu.readByte(regs.pc) - 1; // si parte dall'opcode\n	clock += 3;\n	// instructionName = \"JR + \" n;\n	break;\n}\n// 0x19 ADD HL, DE\ncase 0x19:\n{\n	int tmp = regs.hl + regs.de;\n	regs.hl = tmp;\n	// flags: -0hc----\n	// add/sub flag a 0\n	regs.f &= 0xBF; // 0xBF = 10111111  \n	// carry flag\n	if (tmp > 0xFFFF)\n	{	// set 1\n		regs.f |= 0x10; // 0x10 = 00010000\n	} \n	else\n	{	// set 0\n		regs.f &= 0xEF; // 0xEF = 11101111\n	}\n	// TODO half-carry flag se serve\n\n	clock += 2;\n	//instructionName = \"ADD HL, DE\";\n	break;\n}\n// 0x1A LD A, (DE)\ncase 0x1A:\n{\n	regs.a = mmu.readByte(regs.de);\n	clock += 2;\n	//instructionName = \"LD A, (DE)\";\n	break;\n}\n// 0x1B DEC DE\ncase 0x1B:\n{\n	regs.de--;\n	clock += 2;\n	//instructionName = \"DEC DE\";\n	break;\n}\n// 0x1C INC E\ncase 0x1C:\n{\n	regs.e++;\n	// flags\n	// zero flag\n	if (regs.e == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag a 0\n	regs.f &= 0xBF;\n	// TODO half carry se serve\n\n	clock++;\n	//instructionName = \"INC e\";\n	break;\n}\n// 0x1D DEC E\ncase 0x1D:\n{\n	regs.e--;\n	// flags\n	// zero flag\n	if (regs.e == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag\n	regs.f |= 0x40;\n	// TODO half carry se serve\n	clock++;\n	//instructionName = \"DEC E\";\n	break;\n}\n// 0x1E LD E, n\ncase 0x1E:\n{\n	regs.e = mmu.readByte(regs.pc++);\n	clock += 2;\n	//instructionName = std::string(\"LD E, \") << regs.c;\n	break;\n}\n// 0x1F RRA\ncase 0x1F:\n{\n	// shift a destra dei bit con il carry che va nell'ultimo bit\n	byte lastBit = regs.a & 0x01;\n	// rotazione di A\n	regs.a = (regs.a >> 1) + ((regs.f & 0x10) << 3);\n	// flags 000c\n	// carry flag\n	regs.f = lastBit << 4;\n	clock++;\n	//instructionName = \"RRA\";\n	break;\n}\n// 0x20 JR NZ, n\ncase 0x20:\n{\n	if (regs.f & 0x80 == 0)\n	{\n		// jump\n		regs.pc += mmu.readByte(regs.pc) - 1; // si parte dall'opcode\n	}\n	else\n	{\n		// non jump\n		regs.pc++;\n	}\n	clock += 2;\n	// instructionName = \"JR NZ, \" + n;\n	break;\n}\n// 0x21 LD HL, nn\ncase 0x21:\n{\n	regs.hl = mmu.readWord(regs.pc);\n	regs.pc += 2;\n	clock += 3;\n	// instructionName = \"LD HL, \" + nn;\n	break;\n}\n// 0x22 LD (nn), HL\ncase 0x22:\n{\n	word address = mmu.readWord(regs.pc);\n	regs.pc += 2;\n	mmu.writeWord(address, regs.hl);\n	clock += 5;\n	// instructionName = \"LD (nn), HL\";\n	break;\n}\n// 0x23 INC HL\ncase 0x23:\n{\n	regs.hl++;\n	clock += 2;\n	// instructionName = \"INC HL\";\n	break;\n}\n// 0x24 INC H\ncase 0x24:\n{\n	regs.h++;\n	// flags\n	// zero flag\n	if (regs.h == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag a 0\n	regs.f &= 0xBF;\n	// TODO half carry se serve\n\n	clock++;\n	//instructionName = \"INC H\";\n	break;\n}\n// 0x25 DEC H\ncase 0x25:\n{\n	regs.h--;\n	// flags\n	// zero flag\n	if (regs.h == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag\n	regs.f |= 0x40;\n	// TODO half carry se serve\n	clock++;\n	//instructionName = \"DEC H\";\n	break;\n}\n// 0x26 LD H, n\ncase 0x26:\n{\n	regs.h = mmu.readByte(regs.pc++);\n	clock += 2;\n	//instructionName = std::string(\"LD H, \") << (int) regs.h;\n	break;\n}\n// 0x27 DAA\ncase 0x27:\n{\n	// TODO se serve\n	clock++;\n	// instructionName = \"DAA\";\n	break;\n}\n// 0x28 JR Z, n\ncase 0x28:\n{\n	if (regs.f & 0x80 == 1)\n	{\n		// jump\n		regs.pc += mmu.readByte(regs.pc) - 1; // si parte dall'opcode\n	}\n	else\n	{\n		// non jump\n		regs.pc++;\n	}\n	clock += 2;\n	// instructionName = \"JR Z, \" + n;\n	break;\n}\n// 0x29 ADD HL, HL\ncase 0x29:\n{\n	int tmp = regs.hl + regs.hl;\n	regs.hl = tmp;\n	// flags: -0hc----\n	// add/sub flag a 0\n	regs.f &= 0xBF; // 0xBF = 10111111  \n	// carry flag\n	if (tmp > 0xFFFF)\n	{	// set 1\n		regs.f |= 0x10; // 0x10 = 00010000\n	} \n	else\n	{	// set 0\n		regs.f &= 0xEF; // 0xEF = 11101111\n	}\n	// TODO half-carry flag se serve\n\n	clock += 2;\n	//instructionName = \"ADD HL, HL\";\n	break;\n}\n// 0x2A LD HL, (nn)\ncase 0x2A:\n{\n	regs.hl = mmu.readWord(mmu.readWord(regs.pc));\n	regs.pc += 2;\n	clock += 5;\n	// instructionName = \"LD HL, \" + nn;\n	break;\n}\n// 0x2B DEC HL\ncase 0x2B:\n{\n	regs.hl--;\n	clock += 2;\n	//instructionName = \"DEC HL\";\n	break;	\n}\n// 0x2C INC L\ncase 0x2C:\n{\n	regs.l++;\n	// flags\n	// zero flag\n	if (regs.l == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag a 0\n	regs.f &= 0xBF;\n	// TODO half carry se serve\n\n	clock++;\n	//instructionName = \"INC L\";\n	break;\n}\n// 0x2D DEC L\ncase 0x2D:\n{\n	regs.l--;\n	// flags\n	// zero flag\n	if (regs.l == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= 0x7F;\n	// add/sub flag\n	regs.f |= 0x40;\n	// TODO half carry se serve\n	clock++;\n	//instructionName = \"DEC L\";\n	break;\n}\n// 0xC3 JP nn\ncase 0xC3:\n{\n	word address = mmu.readWord(regs.pc);\n	regs.pc = address;\n	clock += 4;\n	//instructionName = std::string(\"JP \") << address;\n	break;\n}",
 			"file": "instructions.h",
-			"file_size": 9823,
-			"file_write_time": 130886127092923297,
 			"settings":
 			{
-				"buffer_size": 9230,
+				"buffer_size": 25045,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "MMU.cpp",
+			"contents": "// 80 ADD A, B\ncase 0x80:\n{\n	int value = regs.a + regs.b;\n	regs.a = value;\n	// flags: z0hc\n	// zero flag\n	if (value == 0)\n		regs.f |= 0x80;\n	else\n		regs.f &= ~0x80;\n	// add/sub flag\n	regs.f &= ~0x40;\n	// carry flag\n	if (value > 0xFF)\n		regs.f |= 0x10;\n	else\n		regs.f &= ~0x10;\n	// half carry flag\n	byte hFlag = (((regs.a & 0x0F) + (regs.b & 0x0F)) > 0x0F) ? 1 : 0;\n	if (hFlag == 0)\n    	regs.f &= ~0x20;\n    else\n    	regs.f |= 0x20; \n    clock++;\n    // instructionName = \"ADD A, B\";\n    break;\n}",
 			"settings":
 			{
-				"buffer_size": 1179,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "CPU.cpp",
-			"settings":
-			{
-				"buffer_size": 285,
+				"buffer_size": 497,
 				"line_ending": "Windows"
 			}
 		},
@@ -318,10 +327,18 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 150.0,
-		"last_filter": "",
+		"height": 219.0,
+		"last_filter": "install",
 		"selected_items":
 		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"next er",
+				"SublimeLinter: Next Error"
+			],
 			[
 				"close ",
 				"Project: Close"
@@ -441,10 +458,6 @@
 			[
 				"PACKA",
 				"Package Control: List Packages"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"insta",
@@ -591,17 +604,24 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu",
-		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/gbEmu"
+		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu"
 	],
 	"file_history":
 	[
+		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/gbEmu/types.h",
+		"/C/Users/Alessandro/Downloads/Temp/mednafen-0.9.38.7/mednafen/src/gb/gbCodes.h",
+		"/C/Program Files/Sublime Text 3/Data/Packages/User/Default (Windows).sublime-keymap",
 		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/gbEmu/gbEmu.sublime-project",
+		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/gbEmu/MMU.cpp",
+		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/gbEmu/CPU.cpp",
+		"/C/Program Files/Sublime Text 3/Data/Packages/IntelliDocs/IntelliDocs.sublime-settings",
+		"/C/Program Files/Sublime Text 3/Data/Packages/User/IntelliDocs.sublime-settings",
+		"/C/Program Files/Sublime Text 3/Data/Packages/IntelliDocs/Default (Windows).sublime-keymap",
+		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/.gitignore",
+		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/gbEmu/.gitignore",
+		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/.git/info/exclude",
 		"/C/Program Files/Sublime Text 3/Data/Packages/User/Preferences.sublime-settings",
 		"/C/Program Files/Sublime Text 3/Data/Packages/Default/Preferences.sublime-settings",
-		"/C/Program Files/Sublime Text 3/Data/Packages/IntelliDocs/IntelliDocs.sublime-settings",
-		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/gbEmu/types.h",
-		"/C/Program Files/Sublime Text 3/Data/Packages/User/Default (Windows).sublime-keymap",
 		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/roms/ttt.dump",
 		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/roms/ttt.dump2",
 		"/C/Users/Alessandro/Documents/_vsProjects/gbEmu/roms/gbEmu.dmp",
@@ -715,15 +735,7 @@
 		"/V/HandMadeHero/test.sublime-project",
 		"/C/Program Files/Sublime Text 3/Packages/Default/Main.sublime-menu",
 		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
-		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
-		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/User/Distraction Free.sublime-settings",
-		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
-		"/V/test_vari/test_vari/test_vari.cpp",
-		"/V/changeDesktop/changeDesktop/main.cpp",
-		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/SublimeCodeIntel/Default (Windows).sublime-keymap",
-		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/User/SublimeCodeIntel.sublime-settings",
-		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/SublimeCodeIntel/Default (Windows).sublime-mousemap",
-		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/IntelliDocs/Default (Windows).sublime-keymap"
+		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings"
 	],
 	"find":
 	{
@@ -742,6 +754,45 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"hflag",
+			"add ",
+			"add",
+			"jump",
+			"add",
+			"jump",
+			"jr",
+			"cout",
+			"inc b",
+			"inc",
+			"carry",
+			"regs.l =",
+			"LD L",
+			"0x6",
+			"0x5",
+			"regs.e =",
+			"regs.d =",
+			"LD E",
+			"LD D",
+			"regs.c =",
+			"LD c",
+			"0x4",
+			"regs.b =",
+			"LD B",
+			"insstructionName",
+			"0x47",
+			"insstructionName",
+			"ldi",
+			"ldd",
+			"ldi",
+			"add hl",
+			"jr",
+			"inc",
+			"inc ",
+			"0x32",
+			"jr",
+			"ld",
+			"dec",
+			"paste",
 			"tabs",
 			"0x1d",
 			"address",
@@ -830,46 +881,7 @@
 			"ctrl+shift+d",
 			"ctrl+shift+l",
 			"TODO",
-			"\n					",
-			"					// ordociod\n					// @todo: bal\n					// \n",
-			"build",
-			"bytesPerPixel",
-			"ctrl+alt+rig",
-			"build",
-			"v\"",
-			"f4",
-			"CTRL+R",
-			"key",
-			" \"",
-			"expand_selection",
-			"-\"",
-			"-",
-			"f4",
-			"ctrl+shift+l",
-			"ctrl",
-			"SPI_SETDESKWALLPAPER",
-			"\n		",
-			"ctrl+enter",
-			"\"ctrl+b\"",
-			"command",
-			"d",
-			"shift",
-			"ctrl+shift",
-			"ctrl+alt",
-			"setting",
-			"settings",
-			"package",
-			"region2Size",
-			"16000",
-			"ctrl+f",
-			"ctrl+up",
-			"ctrl+shift+u",
-			"region1Size",
-			"RIGHT",
-			"LEFT",
-			"RIGHT",
-			"region2SampleCount",
-			"url"
+			"\n					"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -877,6 +889,19 @@
 		"regex": true,
 		"replace_history":
 		[
+			"regs.a =",
+			"LD A",
+			"0x7",
+			"0x6",
+			"regs.l =",
+			"regs.h =",
+			"LD L",
+			"LD H",
+			"regs.e =",
+			"LD E",
+			"0x5",
+			"regs.d =",
+			"LD D",
 			"instructionName = std::string(\"$1\") <<",
 			"instructionName = \"$1\" <<",
 			"",
@@ -916,8 +941,8 @@
 						"selection":
 						[
 							[
-								300,
-								300
+								409,
+								409
 							]
 						],
 						"settings":
@@ -925,36 +950,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
@@ -965,21 +965,46 @@
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"translate_tabs_to_spaces": false
@@ -997,15 +1022,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 154,
+						"buffer_size": 156,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								154,
-								154
+								156,
+								156
 							]
 						],
 						"settings":
@@ -1013,36 +1038,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
@@ -1053,21 +1053,46 @@
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
 							],
 							"history_list_is_closing": true,
 							"syntax": "Packages/C++/C++.tmLanguage"
@@ -1085,15 +1110,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9230,
+						"buffer_size": 25045,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9069,
-								9069
+								11703,
+								11703
 							]
 						],
 						"settings":
@@ -1101,6 +1126,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
@@ -1111,77 +1141,71 @@
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
 								"bh_tag",
 								"bh_tag_center",
 								"bh_tag_open",
 								"bh_tag_close",
 								"bh_tag_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 7661.0,
+						"translation.y": 7975.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "MMU.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1179,
+						"buffer_size": 497,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								376,
-								376
+								0,
+								497
 							]
 						],
 						"settings":
@@ -1189,150 +1213,61 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"history_list_is_closing": true,
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 28.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "CPU.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 285,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								285,
-								285
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
 								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"translate_tabs_to_spaces": false
@@ -1341,17 +1276,17 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
-					"buffer": 5,
+					"buffer": 4,
 					"file": "CPU.h",
 					"semi_transient": false,
 					"settings":
@@ -1372,36 +1307,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
@@ -1412,35 +1322,60 @@
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
 							],
 							"history_list_is_closing": true,
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
-						"translation.x": -0.0,
-						"translation.y": 56.0,
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 5,
 					"file": "registers.h",
 					"semi_transient": false,
 					"settings":
@@ -1452,8 +1387,8 @@
 						"selection":
 						[
 							[
-								326,
-								326
+								120,
+								120
 							]
 						],
 						"settings":
@@ -1461,21 +1396,16 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
@@ -1486,26 +1416,21 @@
 								"bh_tag_open",
 								"bh_tag_close",
 								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
@@ -1515,21 +1440,31 @@
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
-								"bh_c_define_content"
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
 							],
 							"history_list_is_closing": true,
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 88.0,
+						"translation.y": 60.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 6,
 					"file": "MMU.h",
 					"semi_transient": false,
 					"settings":
@@ -1550,21 +1485,16 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
@@ -1575,26 +1505,21 @@
 								"bh_tag_open",
 								"bh_tag_close",
 								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
@@ -1604,7 +1529,17 @@
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
-								"bh_c_define_content"
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
 							],
 							"history_list_is_closing": true,
 							"syntax": "Packages/C++/C++.tmLanguage",
@@ -1614,7 +1549,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -1680,8 +1615,36 @@
 		"selected_items":
 		[
 			[
+				"t",
+				"gbEmu\\types.h"
+			],
+			[
+				"ma",
+				"gbEmu\\main.cpp"
+			],
+			[
+				"",
+				"gbEmu\\CPU.cpp"
+			],
+			[
 				"in",
 				"gbEmu\\instructions.h"
+			],
+			[
+				"cp",
+				"gbEmu\\CPU.cpp"
+			],
+			[
+				"git",
+				".gitignore"
+			],
+			[
+				"subl",
+				"gbEmu\\gbEmu.sublime-project"
+			],
+			[
+				"mm",
+				"gbEmu\\MMU.h"
 			],
 			[
 				"mmu",
@@ -1692,16 +1655,8 @@
 				"gbEmu\\types.h"
 			],
 			[
-				"mm",
-				"gbEmu\\MMU.h"
-			],
-			[
 				"main",
 				"gbEmu\\main.cpp"
-			],
-			[
-				"cp",
-				"gbEmu\\CPU.cpp"
 			],
 			[
 				"mai",
@@ -1716,20 +1671,12 @@
 				"gbEmu\\types.h"
 			],
 			[
-				"t",
-				"gbEmu\\types.h"
-			],
-			[
 				"reg",
 				"gbEmu\\registers.h"
 			],
 			[
 				"cpu",
 				"gbEmu\\CPU.cpp"
-			],
-			[
-				"",
-				"buildrun.bat"
 			],
 			[
 				"02",
@@ -1765,7 +1712,7 @@
 	},
 	"select_symbol":
 	{
-		"height": 392.0,
+		"height": 334.0,
 		"last_filter": "",
 		"selected_items":
 		[
