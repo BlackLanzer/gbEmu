@@ -116,21 +116,13 @@ case 0x08:
 // 0x09 ADD HL, BC
 case 0x09:
 {
-	// half carry flag
-	// non ho idea di come funziona
-    byte hFlag = (((regs.hl & 0x0FFF) + (regs.bc & 0x0FFF)) > 0x0FFF) ? 1 : 0;
-    if (hFlag == 0)
-    	regs.f &= ~0x20;
-    else
-    	regs.f |= 0x20; 
 
-	int tmp = regs.hl + regs.bc;
-	regs.hl = tmp;
+	int value = regs.hl + regs.bc;
 	// flags: -0hc----
 	// add/sub flag a 0
 	regs.f &= 0xBF; // 0xBF = 10111111  
 	// carry flag
-	if (tmp > 0xFFFF)
+	if (value > 0xFFFF)
 	{	// set 1
 		regs.f |= 0x10; // 0x10 = 00010000
 	} 
@@ -138,6 +130,14 @@ case 0x09:
 	{	// set 0
 		regs.f &= 0xEF; // 0xEF = 11101111
 	}
+	// half carry flag
+	// non ho idea di come funziona
+    byte hFlag = (((regs.hl & 0x0FFF) + (regs.bc & 0x0FFF)) > 0x0FFF) ? 1 : 0;
+    if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.hl = value;
 	clock += 2;
 	//instructionName = "ADD HL, BC";
 	break;
@@ -341,20 +341,12 @@ case 0x18:
 // 0x19 ADD HL, DE
 case 0x19:
 {
-	// half carry flag
-	// non ho idea di come funziona
-	byte hFlag = (((regs.hl & 0x0FFF) + (regs.de & 0x0FFF)) > 0x0FFF) ? 1 : 0;
-    if (hFlag == 0)
-    	regs.f &= ~0x20;
-    else
-    	regs.f |= 0x20; 
-	int tmp = regs.hl + regs.de;
-	regs.hl = tmp;
+	int value = regs.hl + regs.de;
 	// flags: -0hc----
 	// add/sub flag a 0
 	regs.f &= 0xBF; // 0xBF = 10111111  
 	// carry flag
-	if (tmp > 0xFFFF)
+	if (value > 0xFFFF)
 	{	// set 1
 		regs.f |= 0x10; // 0x10 = 00010000
 	} 
@@ -362,6 +354,14 @@ case 0x19:
 	{	// set 0
 		regs.f &= 0xEF; // 0xEF = 11101111
 	}
+	// half carry flag
+	// non ho idea di come funziona
+	byte hFlag = (((regs.hl & 0x0FFF) + (regs.de & 0x0FFF)) > 0x0FFF) ? 1 : 0;
+    if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.hl = value;
 	clock += 2;
 	//instructionName = "ADD HL, DE";
 	break;
@@ -576,7 +576,7 @@ case 0x27:
 	// flags: z-0x
 	// non ho idea di come funziona il tutto
 	int a = regs.a;
-	if ((regs.f &= 0x40) == 0)
+	if ((regs.f & 0x40) == 0)
     {
         if ((regs.f & 0x20) || ((a & 0xF) > 9))
             a += 0x06;
@@ -625,20 +625,12 @@ case 0x28:
 // 0x29 ADD HL, HL
 case 0x29:
 {
-	// half carry flag
-	// non ho idea di come funziona
-    byte hFlag = (((regs.hl & 0x0FFF) + (regs.hl & 0x0FFF)) > 0x0FFF) ? 1 : 0;
-    if (hFlag == 0)
-    	regs.f &= ~0x20;
-    else
-    	regs.f |= 0x20; 
-	int tmp = regs.hl + regs.hl;
-	regs.hl = tmp;
+	int value = regs.hl + regs.hl;
 	// flags: -0hc----
 	// add/sub flag a 0
 	regs.f &= 0xBF; // 0xBF = 10111111  
 	// carry flag
-	if (tmp > 0xFFFF)
+	if (value > 0xFFFF)
 	{	// set 1
 		regs.f |= 0x10; // 0x10 = 00010000
 	} 
@@ -646,7 +638,14 @@ case 0x29:
 	{	// set 0
 		regs.f &= 0xEF; // 0xEF = 11101111
 	}
-	
+	// half carry flag
+	// non ho idea di come funziona
+    byte hFlag = (((regs.hl & 0x0FFF) + (regs.hl & 0x0FFF)) > 0x0FFF) ? 1 : 0;
+    if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.hl = value;
 	clock += 2;
 	//instructionName = "ADD HL, HL";
 	break;
@@ -855,20 +854,12 @@ case 0x38:
 // 0x39 ADD HL, SP
 case 0x39:
 {
-	// half carry flag
-	// non ho idea di come funziona
-	byte hFlag = (((regs.hl & 0x0FFF) + (regs.sp & 0x0FFF)) > 0x0FFF) ? 1 : 0;
-    if (hFlag == 0)
-    	regs.f &= ~0x20;
-    else
-    	regs.f |= 0x20; 
-	int tmp = regs.hl + regs.sp;
-	regs.hl = tmp;
+	int value = regs.hl + regs.sp;
 	// flags: -0hc----
 	// add/sub flag a 0
 	regs.f &= 0xBF; // 0xBF = 10111111  
 	// carry flag
-	if (tmp > 0xFFFF)
+	if (value > 0xFFFF)
 	{	// set 1
 		regs.f |= 0x10; // 0x10 = 00010000
 	} 
@@ -876,6 +867,14 @@ case 0x39:
 	{	// set 0
 		regs.f &= 0xEF; // 0xEF = 11101111
 	}
+	// half carry flag
+	// non ho idea di come funziona
+	byte hFlag = (((regs.hl & 0x0FFF) + (regs.sp & 0x0FFF)) > 0x0FFF) ? 1 : 0;
+    if (hFlag == 0)
+    	regs.f &= ~0x20;
+    else
+    	regs.f |= 0x20; 
+	regs.hl = value;
 	clock += 2;
 	//instructionName = "ADD HL, SP";
 	break;
@@ -1465,7 +1464,6 @@ case 0x7F:
 case 0x80:
 {
 	int value = regs.a + regs.b;
-	regs.a = value;
 	// flags: z0hc
 	// zero flag
 	if (value == 0)
@@ -1485,6 +1483,7 @@ case 0x80:
     	regs.f &= ~0x20;
     else
     	regs.f |= 0x20; 
+	regs.a = value;
     clock++;
     // instructionName = "ADD A, B";
     break;
